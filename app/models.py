@@ -16,4 +16,4 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(280), unique=True)
     api_token = db.Column(db.String(280))
-    tweetys = db.relationship("Tweet", backref='user', lazy=True)
+    tweets = db.relationship("Tweet", backref='user', lazy=True)
