@@ -1,19 +1,22 @@
 from flask_restplus import Namespace, Resource, fields
-from flask import abort
+from flask import abort, request
 from app import db
 #from app.db import tweet_repository
-from app.models import Tweet
+from app.models import Tweet, User
+
 
 api = Namespace('tweets')
 
 json_tweet = api.model('Tweet', {
     'id': fields.Integer,
     'text': fields.String,
-    'created_at': fields.DateTime
+    'created_at': fields.DateTime,
+    'user.name': fields.String,
 })
 
 json_new_tweet = api.model('New tweet', {
-    'text': fields.String(required=True)
+    'text': fields.String(required=True),
+    'user': fields.String(required=False),
 })
 
 @api.route('/<int:id>')
@@ -55,9 +58,12 @@ class TweetsResource(Resource):
     @api.expect(json_new_tweet, validate=True)
     def post(self):
         text = api.payload["text"]
+        user = api.payload["user"]
         if len(text) > 0:
             tweet = Tweet()
             tweet.text = text
+            user = db.session.query(User).filter_by(name=user).first()
+            tweet.user_id = user.id
             db.session.add(tweet)
             db.session.commit()
             return tweet, 201

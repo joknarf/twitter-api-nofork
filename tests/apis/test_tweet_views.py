@@ -1,6 +1,6 @@
 from flask_testing import TestCase
 from app import create_app, db
-from app.models import Tweet
+from app.models import Tweet, User
 #from app.db import tweet_repository
 
 class TestTweetViews(TestCase):
@@ -30,11 +30,16 @@ class TestTweetViews(TestCase):
         self.assertIsNotNone(response_tweet["created_at"])
 
     def test_tweet_create(self):
-        response = self.client.post("/tweets", json={'text': 'New tweet!'})
+        user = User()
+        user.name = 'knarf'
+        db.session.add(user)
+        db.session.commit()
+        response = self.client.post("/tweets", json={'text': 'New tweet!', 'user': 'knarf'})
         created_tweet = response.json
         self.assertEqual(response.status_code, 201)
         self.assertEqual(created_tweet["id"], 1)
         self.assertEqual(created_tweet["text"], "New tweet!")
+        print(created_tweet)
 
     def test_tweet_update(self):
         first_tweet = Tweet()

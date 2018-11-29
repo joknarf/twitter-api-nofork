@@ -12,8 +12,8 @@ class Tweet(db.Model):
         return f"<Tweet #{self.id}>"
 
 class User(db.Model):
-    __table__name = "user"
+    __table__name = "users"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(280))
+    name = db.Column(db.String(280), unique=True)
     api_token = db.Column(db.String(280))
-    children = db.relationship("Tweet")
+    tweetys = db.relationship("Tweet", backref='user', lazy=True)
